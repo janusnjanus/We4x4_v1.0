@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">We4x4_v1</string>
+    <string name="firebase_url">"https://wi4x4.firebaseio.com"</string>
+    <string name="firebase_data">"https://wi4x4.firebaseio.com/data/"</string>
+    <string name="firebase_users">"https://wi4x4.firebaseio.com/users/"</string>
+    <string name="firebase_uploads">"https://wi4x4.firebaseio.com/uploads/"</string>
+    <string name="firebase_rating">"https://wi4x4.firebaseio.com/rating/"</string>
+</resources>
