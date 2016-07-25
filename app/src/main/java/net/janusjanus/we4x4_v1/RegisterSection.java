@@ -2,6 +2,7 @@ package net.janusjanus.we4x4_v1;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -60,6 +61,10 @@ public class RegisterSection extends AppCompatActivity  {
     @Bind(R.id.input_name) EditText input_name;
     @Bind(R.id.link_login) TextView link_login;
 
+    SharedPreferences pref;
+
+    SharedPreferences.Editor editor;
+
     @Override
     public void onCreate (Bundle savedInstanceState) {
         Firebase.setAndroidContext(this);
@@ -67,6 +72,9 @@ public class RegisterSection extends AppCompatActivity  {
         setContentView(R.layout.register);
         Firebase.setAndroidContext(this);
         ButterKnife.bind(this);
+
+        pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        editor = pref.edit();
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -101,22 +109,25 @@ public class RegisterSection extends AppCompatActivity  {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
                         }else if(id == R.id.navUpoad) {
-                            Toast.makeText(getApplicationContext(),
-                                    "Upload",
-                                    Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(getApplicationContext(), upload.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
                         }else if (id == R.id.navChat) {
 
                             Intent intent = new Intent(getApplicationContext(), chatSection.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if (id == R.id.navGPS) {
-                            Toast.makeText(getApplicationContext(),
-                                    "GPS",
-                                    Toast.LENGTH_SHORT).show();
-                        }else if (id == R.id. navInfo){
-                            Toast.makeText(getApplicationContext(),
-                                    "My Info.",
-                                    Toast.LENGTH_SHORT).show();
+                        }else if (id == R.id.navGPS && authDataReg !=null) {
+
+                            Intent intent = new Intent(getApplicationContext(), logLocation.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
+                        }else if (id == R.id. navInfo && authDataReg !=null){
+
+                            Intent intent = new Intent(getApplicationContext(), MyInfo.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
                         }else if(id == R.id.navRegister){
                             userStatCehck();
                             Toast.makeText(getApplicationContext(),
@@ -244,6 +255,11 @@ public class RegisterSection extends AppCompatActivity  {
             UserID = authData.getUid();
             memberBtn.setVisibility(View.VISIBLE);
             RegisterSubm.setVisibility(View.GONE);
+
+            editor.putString("UserID",UserID);
+            editor.commit();
+
+            Log.i("MyTag_shared_pref", pref.getString("UserID","cant_find"));
         }
     }
 

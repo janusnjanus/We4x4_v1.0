@@ -1,6 +1,7 @@
 package net.janusjanus.we4x4_v1;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -53,12 +54,26 @@ public class MainActivity extends AppCompatActivity {
     Firebase.AuthStateListener authStateListenerMain;
     AuthData authDataMain;
 
+    SharedPreferences pref;
+
+    SharedPreferences.Editor editor;
+
+    String prefUserID = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Firebase.setAndroidContext(this);
         ButterKnife.bind(this);
+
+//        prefUserID = pref.getString("UserID","cantFind");
+//        if(prefUserID !=null){
+//            Log.i("MyTag_shared_Pref",prefUserID);
+//        }
+
+        pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        editor = pref.edit();
 
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -127,21 +142,20 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if(id == R.id.navUpoad) {
+                        }else if(id == R.id.navUpoad && authDataMain !=null) {
 
-                            Intent intent = new Intent(getApplicationContext(), upload.class);
-                            startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if (id == R.id.navChat) {
+                        }else if (id == R.id.navChat && authDataMain !=null) {
 
                             Intent intent = new Intent(getApplicationContext(), chatSection.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if (id == R.id.navGPS) {
-                            Toast.makeText(getApplicationContext(),
-                                    "GPS",
-                                    Toast.LENGTH_SHORT).show();
-                        }else if (id == R.id. navInfo){
+                        }else if (id == R.id.navGPS && authDataMain !=null) {
+
+                            Intent intent = new Intent(getApplicationContext(), logLocation.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
+                        }else if (id == R.id. navInfo && authDataMain !=null){
 
                             Intent intent = new Intent(getApplicationContext(), MyInfo.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
@@ -154,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         }else if(id ==R.id.navLogout){
                             logout();
                             Toast.makeText(getApplicationContext(),
-                                    "Logout",
+                                    "logout",
                                     Toast.LENGTH_SHORT).show();
                         }else if (id == R.id.navAbout){
                             AlertDialog.Builder builder =
@@ -171,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                         mDrawerLayout.closeDrawers();
                         return true;
                     }
+
                 });
 
         /** firebase links shortcuts **/
@@ -301,13 +316,15 @@ public class MainActivity extends AppCompatActivity {
     private void userStatCehck(){
         if(authDataMain !=null){
             Toast.makeText(getApplicationContext(),
-                    "You have a user account active, logout to register a new account",
+                    "You must login/register",
                     Toast.LENGTH_LONG).show();
         }else{
             Intent intent = new Intent(getApplicationContext(), RegisterSection.class);
             startActivityForResult(intent, REQUEST_SIGNUP);
         }
     }
+
+
 
     /** Actions whe user log out; null user Info. and clear layout elements related to user **/
     private void logout() {

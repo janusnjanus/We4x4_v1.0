@@ -126,11 +126,12 @@ public class Member extends AppCompatActivity{
                             Intent intent = new Intent(getApplicationContext(), chatSection.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if (id == R.id.navGPS) {
-                            Toast.makeText(getApplicationContext(),
-                                    "GPS",
-                                    Toast.LENGTH_SHORT).show();
-                        }else if (id == R.id. navInfo){
+                        }else if (id == R.id.navGPS && authDataMM !=null) {
+
+                            Intent intent = new Intent(getApplicationContext(), logLocation.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
+                        }else if (id == R.id. navInfo && authDataMM !=null){
 
                             Intent intent = new Intent(getApplicationContext(), MyInfo.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
