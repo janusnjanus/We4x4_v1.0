@@ -16,10 +16,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +43,21 @@ public class MyInfo extends AppCompatActivity {
     Firebase.AuthStateListener authStateListenerMM;
     AuthData authDataMM;
 
+    /** **/
+
+    TextView textViewUsername,textViewEmailAddress,textViewRank;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_info);
         Firebase.setAndroidContext(this);
+
+        textViewUsername = (TextView)findViewById(R.id.textViewUsername);
+        textViewEmailAddress = (TextView)findViewById(R.id.textViewEmailAddress);
+        textViewRank = (TextView)findViewById(R.id.textViewRank);
+
 
         // Adding Toolbar to Main screen
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -83,24 +96,26 @@ public class MyInfo extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
-                        }else if(id == R.id.navUpoad) {
+                        }else if(id == R.id.navUpoad && authDataMM !=null) {
 
                             Intent intent = new Intent(getApplicationContext(), upload.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if (id == R.id.navChat) {
+                        }else if (id == R.id.navChat && authDataMM !=null) {
 
                             Intent intent = new Intent(getApplicationContext(), chatSection.class);
                             startActivityForResult(intent, REQUEST_SIGNUP);
 
-                        }else if (id == R.id.navGPS) {
-                            Toast.makeText(getApplicationContext(),
-                                    "GPS",
-                                    Toast.LENGTH_SHORT).show();
-                        }else if (id == R.id. navInfo){
-                            Toast.makeText(getApplicationContext(),
-                                    "My Info.",
-                                    Toast.LENGTH_SHORT).show();
+                        }else if (id == R.id.navGPS && authDataMM !=null) {
+
+                            Intent intent = new Intent(getApplicationContext(), logLocation.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
+                        }else if (id == R.id. navInfo && authDataMM !=null){
+
+                            Intent intent = new Intent(getApplicationContext(), MyInfo.class);
+                            startActivityForResult(intent, REQUEST_SIGNUP);
+
                         }else if(id == R.id.navRegister){
                             userStatCehck();
                             Toast.makeText(getApplicationContext(),
@@ -171,7 +186,28 @@ public class MyInfo extends AppCompatActivity {
             //TODO:CHANGES FOR ATUHENTICATED USER
 
             UserID = authData.getUid();
+
+            getUserInfo();
         }
+    }
+
+    public void getUserInfo(){
+        firebaseRefUsersMM.child(UserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                userInformation userInformation = dataSnapshot.getValue(userInformation.class);
+                textViewUsername.setText(userInformation.getUsername());
+                textViewEmailAddress.setText(userInformation.getEmail());
+                textViewRank.setText(userInformation.getRank().toString());
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+
     }
 
     // Add Fragments to Tabs
@@ -179,7 +215,7 @@ public class MyInfo extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getSupportFragmentManager());
         adapter.addFragment(new ChangePasswordFragment(), "Change Password");
-        adapter.addFragment(new VidContentFragment(), "Reset Password");
+        adapter.addFragment(new ResetPassFragment(), "Reset Password");
         adapter.addFragment(new ChangeEmailFragment(), "Change \nEmail");
 
         viewPager.setAdapter(adapter);
